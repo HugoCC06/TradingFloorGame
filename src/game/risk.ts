@@ -38,7 +38,7 @@ export function evaluateRisk(state: GameState, s: PortfolioSummary = summarize(s
         title: `${p.id} is ${(w * 100).toFixed(1)}% of NAV`,
         detail: `Single-position limit is ${(L.maxPositionWeight * 100).toFixed(0)}% of NAV. A concentrated ${p.qty > 0 ? 'long' : 'short'} in ${p.inst.name} exposes the fund to one company's news.`,
         instruments: [p.id], value: w, limit: L.maxPositionWeight,
-        actions: [`${p.qty > 0 ? 'Sell' : 'Cover'} about ${excess.toLocaleString()} units of ${p.id}`, 'Grow NAV with new subscriptions', 'Set a target allocation and rebalance'],
+        actions: [`${p.qty > 0 ? 'Sell' : 'Cover'} about ${excess.toLocaleString('en-US')} units of ${p.id}`, 'Grow NAV with new subscriptions', 'Set a target allocation and rebalance'],
       });
     } else if (w > L.maxPositionWeight * 0.85) {
       out.push({ id: `pos:${p.id}`, rule: 'position', severity: 'warning', title: `${p.id} approaching position limit`, detail: `${(w * 100).toFixed(1)}% of NAV vs ${(L.maxPositionWeight * 100).toFixed(0)}% limit.`, instruments: [p.id], value: w, limit: L.maxPositionWeight, actions: ['Avoid adding to this position'] });

@@ -140,7 +140,7 @@ export function validateOrder(state: GameState, draft: OrderDraft, origin: Order
   const maxQty = Math.floor(inst.adv * BALANCE.trading.maxAdvFraction);
   res.maxQty = maxQty;
   if (!Number.isFinite(qty) || !Number.isInteger(qty) || qty <= 0) errors.push('Quantity must be a whole number greater than zero.');
-  else if (qty > maxQty) errors.push(`Order exceeds the liquidity limit of ${maxQty.toLocaleString()} units (10% of average daily volume).`);
+  else if (qty > maxQty) errors.push(`Order exceeds the liquidity limit of ${maxQty.toLocaleString('en-US')} units (10% of average daily volume).`);
 
   if (draft.type === 'limit') {
     if (!draft.limitPrice || !Number.isFinite(draft.limitPrice) || draft.limitPrice <= 0) errors.push('Enter a valid limit price.');
@@ -161,7 +161,7 @@ export function validateOrder(state: GameState, draft: OrderDraft, origin: Order
     case 'sell': {
       const avail = cur - pendingQty(state, inst.id, 'sell');
       if (cur <= 0) errors.push(`You have no long position in ${inst.id} to sell. Use Short to sell short.`);
-      else if (qty > avail) errors.push(`You can sell at most ${Math.max(0, avail).toLocaleString()} units (including pending sell orders).`);
+      else if (qty > avail) errors.push(`You can sell at most ${Math.max(0, avail).toLocaleString('en-US')} units (including pending sell orders).`);
       break;
     }
     case 'short':
@@ -171,7 +171,7 @@ export function validateOrder(state: GameState, draft: OrderDraft, origin: Order
     case 'cover': {
       const avail = -cur - pendingQty(state, inst.id, 'cover');
       if (cur >= 0) errors.push(`You have no short position in ${inst.id} to cover.`);
-      else if (qty > avail) errors.push(`You can cover at most ${Math.max(0, avail).toLocaleString()} units (including pending cover orders).`);
+      else if (qty > avail) errors.push(`You can cover at most ${Math.max(0, avail).toLocaleString('en-US')} units (including pending cover orders).`);
       break;
     }
   }
@@ -243,7 +243,7 @@ export function submitOrder(state: GameState, draft: OrderDraft, origin: OrderOr
   if (!check.ok) {
     order.status = 'rejected';
     order.reason = check.errors.join(' ');
-    if (origin === 'player') notify(state, 'danger', `Order rejected: ${draft.side.toUpperCase()} ${draft.quantity.toLocaleString()} ${draft.instrument}`, order.reason, { link: { screen: 'orders' }, sound: 'reject' });
+    if (origin === 'player') notify(state, 'danger', `Order rejected: ${draft.side.toUpperCase()} ${draft.quantity.toLocaleString('en-US')} ${draft.instrument}`, order.reason, { link: { screen: 'orders' }, sound: 'reject' });
     return order;
   }
   if (state.clock.phase === 'open' && inst) {
@@ -263,7 +263,7 @@ export function submitOrder(state: GameState, draft: OrderDraft, origin: OrderOr
 
 export function describeOrder(o: Order): string {
   const px = o.type === 'limit' ? ` @ ${o.limitPrice?.toFixed(2)} limit` : o.type === 'stop' ? ` @ ${o.stopPrice?.toFixed(2)} stop` : ' at market';
-  return `${o.side.toUpperCase()} ${o.quantity.toLocaleString()} ${o.instrument}${px}`;
+  return `${o.side.toUpperCase()} ${o.quantity.toLocaleString('en-US')} ${o.instrument}${px}`;
 }
 
 function trimOrders(state: GameState) {
@@ -342,7 +342,7 @@ function executeOrder(state: GameState, order: Order, inst: Instrument, basePric
   if (order.side === 'short') state.stats.shorts++;
   inst.dayVolume += order.quantity;
   if (order.origin === 'player' || order.origin === 'stop-protection') {
-    notify(state, 'success', `Filled: ${order.side.toUpperCase()} ${order.quantity.toLocaleString()} ${inst.id}`, `@ ${price.toFixed(2)} · commission ${fmt(commission / 100)}${realized ? ` · realised ${realized >= 0 ? '+' : '−'}${fmt(Math.abs(realized) / 100)}` : ''}`, { link: { screen: 'orders' }, sound: 'order' });
+    notify(state, 'success', `Filled: ${order.side.toUpperCase()} ${order.quantity.toLocaleString('en-US')} ${inst.id}`, `@ ${price.toFixed(2)} · commission ${fmt(commission / 100)}${realized ? ` · realised ${realized >= 0 ? '+' : '−'}${fmt(Math.abs(realized) / 100)}` : ''}`, { link: { screen: 'orders' }, sound: 'order' });
   }
   // stop protection automation for new/increased positions
   if (order.origin === 'player' && (order.side === 'buy' || order.side === 'short') && automationOn(state, 'stopProtection')) {
@@ -492,5 +492,5 @@ export function openOrders(state: GameState) {
 }
 
 export function keyEventForBigTrade(state: GameState, fill: Fill, nav: Cents) {
-  if (Math.abs(fill.notional) > nav * 0.15) logKeyEvent(state, `Large trade: ${fill.side} ${fill.quantity.toLocaleString()} ${fill.instrument} (${Math.round((fill.notional / nav) * 100)}% of NAV)`);
+  if (Math.abs(fill.notional) > nav * 0.15) logKeyEvent(state, `Large trade: ${fill.side} ${fill.quantity.toLocaleString('en-US')} ${fill.instrument} (${Math.round((fill.notional / nav) * 100)}% of NAV)`);
 }

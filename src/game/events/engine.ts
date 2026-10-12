@@ -36,7 +36,7 @@ function render(tpl: string, vars: Record<string, string>): string {
 function money(x: number) {
   if (x >= 1e9) return `$${(x / 1e9).toFixed(1)}B`;
   if (x >= 1e6) return `$${(x / 1e6).toFixed(0)}M`;
-  return `$${Math.round(x).toLocaleString()}`;
+  return `$${Math.round(x).toLocaleString('en-US')}`;
 }
 
 function defaultVars(rng: Rng, inst?: Instrument, other?: Instrument, sector?: SectorId): Record<string, string> {

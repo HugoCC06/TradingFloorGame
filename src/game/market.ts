@@ -290,7 +290,7 @@ export function applyOvernightGap(state: GameState) {
   }
 }
 
-/** End-of-day housekeeping for instruments: roll fair values, trends and anchors. */
+/** End-of-day housekeeping for instruments: roll fair values, trends and anchors. (prevClose rolls next morning so the evening still shows today's change.) */
 export function closeMarketDay(state: GameState) {
   const rng = new Rng(state.rng.market);
   for (const inst of state.instruments) {
@@ -305,7 +305,6 @@ export function closeMarketDay(state: GameState) {
     }
     inst.sysAcc = 0;
     inst.newsTone *= 0.85;
-    inst.prevClose = inst.price;
   }
 }
 

@@ -210,17 +210,17 @@ function buildReport(state: GameState, rec: DailyRecord, rivalNotes: { id: strin
   const news = state.news.filter((n) => n.day === state.clock.day && n.severity >= 2).slice(-8).map((n) => n.id);
   const riskNotes = state.risk.breaches.map((b) => `${b.severity.toUpperCase()}: ${b.title}`);
   const clientNotes: string[] = [];
-  if (rec.subscriptions) clientNotes.push(`Subscriptions settled: $${Math.round(rec.subscriptions / 100).toLocaleString()}`);
-  if (rec.redemptions) clientNotes.push(`Redemptions paid: $${Math.round(rec.redemptions / 100).toLocaleString()}`);
+  if (rec.subscriptions) clientNotes.push(`Subscriptions settled: $${Math.round(rec.subscriptions / 100).toLocaleString('en-US')}`);
+  if (rec.redemptions) clientNotes.push(`Redemptions paid: $${Math.round(rec.redemptions / 100).toLocaleString('en-US')}`);
   for (const c of state.clients) {
     const last = c.history[c.history.length - 1];
-    if (last && last.day === state.clock.day && !/settled|paid/.test(last.text)) clientNotes.push(`${c.name}: ${last.text}`);
+    if (last && last.day === state.clock.day && !/settled|paid|Seed investor/.test(last.text)) clientNotes.push(`${c.name}: ${last.text}`);
   }
   const atRisk = state.clients.filter((c) => c.status === 'active' && c.type !== 'founder' && c.confidence < 40);
   if (atRisk.length) clientNotes.push(`${atRisk.length} client${atRisk.length > 1 ? 's' : ''} at risk of redeeming (confidence < 40)`);
   const companyNotes = [
-    `Fee revenue today $${Math.round(rec.companyRevenue / 100).toLocaleString()} · expenses $${Math.round(rec.companyExpenses / 100).toLocaleString()}`,
-    `Company cash $${Math.round(state.company.cash / 100).toLocaleString()}`,
+    `Fee revenue today $${Math.round(rec.companyRevenue / 100).toLocaleString('en-US')} · expenses $${Math.round(rec.companyExpenses / 100).toLocaleString('en-US')}`,
+    `Company cash $${Math.round(state.company.cash / 100).toLocaleString('en-US')}`,
   ];
   const reviewNotes: string[] = [];
   if (automationOn(state, 'dailyReview')) {
@@ -257,6 +257,7 @@ export function nextDay(state: GameState): boolean {
 
 /** Overnight news, scheduled pre-market releases and the opening gap. */
 export function overnight(state: GameState, randomNews: boolean) {
+  for (const inst of state.instruments) inst.prevClose = inst.price;
   processEarnings(state, -1);
   processMacroReleases(state, -1);
   processScheduled(state, -1);

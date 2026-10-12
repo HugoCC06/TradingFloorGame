@@ -90,7 +90,7 @@ export function newGame(setup: GameSetup): GameState {
     notifications: [],
     decisions: [],
     reputation: preset.reputation,
-    stats: { peakNav: 0, peakAum: 0, maxDrawdown: 0, bestDay: 0, worstDay: 0, trades: 0, shorts: 0, profitableDays: 0, daysPlayed: 0, wonClients: 0, lostClients: 0, hires: 0, recoveredFromDrawdown: false, maxDrawdownSinceHigh: 0, keyEvents: [] },
+    stats: { startNav: 0, peakNav: 0, peakAum: 0, maxDrawdown: 0, bestDay: 0, worstDay: 0, trades: 0, shorts: 0, profitableDays: 0, daysPlayed: 0, wonClients: 0, lostClients: 0, hires: 0, recoveredFromDrawdown: false, maxDrawdownSinceHigh: 0, keyEvents: [] },
     achievements: [],
     status: 'active',
     failure: null,
@@ -142,6 +142,7 @@ export function newGame(setup: GameSetup): GameState {
   state.fund.peakNav = totalCash;
   state.navAtOpen = totalCash;
   state.stats.peakNav = totalCash;
+  state.stats.startNav = totalCash;
   state.stats.peakAum = totalCash;
 
   // staff

@@ -18,11 +18,11 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'first_client', name: 'Trusted Steward', description: 'Win a new investor mandate.', check: (s) => s.stats.wonClients > 0 },
   { id: 'profit_1m', name: 'Seven Figures', description: 'Generate $1 million of cumulative investment profit.', check: (s) => s.fund.totals.realized + unrealizedApprox(s) >= toCents(1_000_000) },
   { id: 'fees_1m', name: 'First Million in Fees', description: 'Earn $1 million of fee revenue for the management company.', check: (s) => s.company.totals.revenue >= toCents(1_000_000) },
-  { id: 'aum_10m', name: 'Ten Million Club', description: 'Reach $10 million in AUM.', check: (_s, nav) => nav >= toCents(10e6) },
-  { id: 'aum_50m', name: 'Serious Money', description: 'Reach $50 million in AUM.', check: (_s, nav) => nav >= toCents(50e6) },
-  { id: 'aum_100m', name: 'Nine Figures', description: 'Reach $100 million in AUM.', check: (_s, nav) => nav >= toCents(100e6) },
-  { id: 'aum_500m', name: 'Institutional Grade', description: 'Reach $500 million in AUM.', check: (_s, nav) => nav >= toCents(500e6) },
-  { id: 'aum_1b', name: 'Billion-Dollar Fund', description: 'Reach $1 billion in AUM.', check: (_s, nav) => nav >= toCents(1e9) },
+  { id: 'aum_10m', name: 'Ten Million Club', description: 'Reach $10 million in AUM.', check: (s, nav) => grew(s, nav, 10e6) },
+  { id: 'aum_50m', name: 'Serious Money', description: 'Reach $50 million in AUM.', check: (s, nav) => grew(s, nav, 50e6) },
+  { id: 'aum_100m', name: 'Nine Figures', description: 'Reach $100 million in AUM.', check: (s, nav) => grew(s, nav, 100e6) },
+  { id: 'aum_500m', name: 'Institutional Grade', description: 'Reach $500 million in AUM.', check: (s, nav) => grew(s, nav, 500e6) },
+  { id: 'aum_1b', name: 'Billion-Dollar Fund', description: 'Reach $1 billion in AUM.', check: (s, nav) => grew(s, nav, 1e9) },
   { id: 'recovery', name: 'Comeback', description: 'Recover from a drawdown of at least 10% to a new high.', check: (s) => s.stats.recoveredFromDrawdown },
   { id: 'annual_25', name: 'Stellar Year', description: 'Return 25% or more over any 252-day window.', check: (s) => s.daily.length >= 252 && trailingReturn(s, 252) >= 0.25 },
   { id: 'beat_bench', name: 'Alpha Generator', description: 'Beat the benchmark by 5% since inception (after 60 days).', check: (s) => s.daily.length >= 60 && sinceInception(s) - benchSince(s) > 0.05 },
@@ -36,6 +36,11 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'crisis_survivor', name: 'Storm Survivor', description: 'Finish a day during a financial crisis with a positive return (Hard).', check: (s) => s.macro.regime === 'crisis' && (s.daily[s.daily.length - 1]?.dailyReturn ?? 0) > 0 },
   { id: 'pension', name: 'Pension Approved', description: 'Win a pension fund as a client.', check: (s) => s.clients.some((c) => c.type === 'pension' && c.status !== 'departed') },
 ];
+
+/** AUM milestone reached through growth, not simply by starting above it. */
+function grew(s: GameState, nav: number, dollars: number) {
+  return nav >= toCents(dollars) && s.stats.startNav < toCents(dollars);
+}
 
 function unrealizedApprox(s: GameState) {
   let u = 0;

@@ -514,6 +514,8 @@ export interface EodReport {
 }
 
 export interface RunStats {
+  /** NAV on the first day, for growth-based milestones */
+  startNav: Cents;
   peakNav: Cents;
   peakAum: Cents;
   maxDrawdown: number;
