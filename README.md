@@ -110,7 +110,9 @@ If the variables are unset, all cloud code stays dormant: the Supabase client is
 
 ## Deployment
 
-The build is a static site in `dist/`. Routing uses the URL hash, so no rewrite rules are needed. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for Cloudflare Pages, Vercel and Netlify.
+The game is hosted on **GitHub Pages**. The workflow in `.github/workflows/deploy.yml` tests, builds and publishes on every push to `main`. For a one-time setup, go to **Settings → Pages** and set **Source** to **GitHub Actions**. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+The build is a static site in `dist/` with relative asset paths and hash routing, so it works at any sub-path:
 
 ```bash
 npm ci && npm run build   # output: dist/

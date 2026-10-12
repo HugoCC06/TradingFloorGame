@@ -42,8 +42,8 @@ Status against the design brief's definition of done. ✅ means implemented and 
 - ✅ 64 Vitest tests and 3 Playwright E2E tests passing
 - ✅ Production build succeeds
 - ✅ Checked in Chromium at desktop and phone widths; no runtime errors in a multi-day 80× session
-- ✅ Deployment guide (Cloudflare Pages, Vercel, Netlify, static)
-- ❌ Not published to a public URL: deployment requires the owner's hosting account
+- ✅ GitHub Pages deployment workflow (build verified at a `/TradingFloorGame/` sub-path)
+- ⏳ Goes live once the branch is merged to `main` and Pages source is set to GitHub Actions
 
 ## Assumptions
 - Exchange time is shown as-is (no time zones). Fictional dates start in 2031 and vary with the seed.
