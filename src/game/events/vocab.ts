@@ -1,0 +1,11 @@
+export const PRODUCT_WORDS = ['Vault', 'Pulse', 'Atlas', 'Nimbus', 'Orbit', 'Prism', 'Vector', 'Halo', 'Echo', 'Forge', 'Nova', 'Summit', 'Strata', 'Aegis', 'Lumen', 'Quill', 'Tempo', 'Zenith'];
+export const DRUG_PREFIX = ['Zel', 'Vor', 'Tra', 'Lumi', 'Cor', 'Ner', 'Pex', 'Ast', 'Bri', 'Oxa', 'Dal', 'Fen'];
+export const DRUG_SUFFIX = ['avimab', 'olitide', 'emarin', 'astatin', 'ozumab', 'ifenib', 'oprazine', 'uvexa'];
+export const BROKERS = ['Hollis Brandt', 'Marchetti Wolfe', 'Castlegate Securities', 'Penrose & Vale', 'Northbridge Research', 'Kessler Duquesne', 'Albion Partners'];
+export const SHORT_SELLERS = ['Glasshouse Research', 'Nightjar Capital', 'Cassandra Analytics', 'Hollowpoint Research'];
+export const REGIONS = ['Southeast Asia', 'Latin America', 'the Gulf region', 'Northern Europe', 'East Africa', 'the Pacific Rim'];
+export const COUNTRIES = ['the Republic of Valdoria', 'Estmark', 'the Federation of Corvania', 'Lusoria', 'Kaledonia'];
+export const ISSUES = ['revenue recognition', 'channel stuffing', 'undisclosed related-party deals', 'inflated user numbers', 'hidden liabilities', 'aggressive capitalised costs'];
+export const PROBE_TOPICS = ['pricing practices', 'data privacy practices', 'safety disclosures', 'sales practices', 'antitrust conduct', 'emissions reporting'];
+export const GUIDANCE_REASONS = ['softer demand', 'rising input costs', 'customer destocking', 'currency headwinds', 'project delays', 'weaker pricing'];
+export const CUSTOMERS = ['a national defence agency', 'a major hyperscaler', 'a state transport authority', 'a leading automaker', 'a global retailer', 'a regional utility consortium'];
