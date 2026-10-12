@@ -3,26 +3,61 @@
  * tagged so they round-trip exactly; IndexedDB stores them natively.
  */
 import type { GameState } from '../game/types';
+import { createSeries, type SeriesData } from '../game/series';
 
 const TAG = '__ta';
-type Tagged = { [TAG]: string; d: number[] };
+type Tagged = { [TAG]: string; d?: number[]; b64?: string };
 
+/** Typed arrays are stored as base64 of their raw bytes (≈3× smaller than number lists). */
 export function toJSON(state: unknown): string {
   return JSON.stringify(state, (_k, v) => {
-    if (v instanceof Float64Array) return { [TAG]: 'f64', d: Array.from(v) } satisfies Tagged;
-    if (v instanceof Float32Array) return { [TAG]: 'f32', d: Array.from(v) } satisfies Tagged;
+    if (isSeries(v) && v.len < v.cap) return compactSeries(v);
+    if (v instanceof Float64Array || v instanceof Float32Array) {
+      return { [TAG]: v instanceof Float64Array ? 'f64' : 'f32', b64: bytesToBase64(new Uint8Array(v.buffer, v.byteOffset, v.byteLength)) } satisfies Tagged;
+    }
     return v;
   });
 }
 
 export function fromJSON(text: string): unknown {
   return JSON.parse(text, (_k, v) => {
-    if (v && typeof v === 'object' && TAG in v && Array.isArray((v as Tagged).d)) {
+    if (v && typeof v === 'object' && TAG in v) {
       const t = v as Tagged;
-      return t[TAG] === 'f64' ? Float64Array.from(t.d) : Float32Array.from(t.d);
+      if (typeof t.b64 === 'string') {
+        const bytes = base64ToBytes(t.b64);
+        const buf = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+        return t[TAG] === 'f64' ? new Float64Array(buf) : new Float32Array(buf);
+      }
+      if (Array.isArray(t.d)) return t[TAG] === 'f64' ? Float64Array.from(t.d) : Float32Array.from(t.d);
     }
+    if (isSeries(v) && v.t.length < v.cap) return expandSeries(v);
     return v;
   });
+}
+
+function isSeries(v: unknown): v is SeriesData {
+  return !!v && typeof v === 'object' && 'cap' in v && 'len' in v && (v as SeriesData).t instanceof Float64Array;
+}
+
+/** Store only the filled part of a ring buffer, in chronological order. */
+function compactSeries(s: SeriesData): SeriesData {
+  const out = createSeries(Math.max(1, s.len), s.grow);
+  for (let i = 0; i < s.len; i++) {
+    const j = (s.start + i) % s.cap;
+    out.t[i] = s.t[j]; out.o[i] = s.o[j]; out.h[i] = s.h[j]; out.l[i] = s.l[j]; out.c[i] = s.c[j]; out.v[i] = s.v[j];
+  }
+  out.len = s.len;
+  out.cap = s.cap; // logical capacity is preserved; arrays are re-expanded on load
+  return out;
+}
+
+function expandSeries(s: SeriesData): SeriesData {
+  const out = createSeries(s.cap, s.grow);
+  const n = Math.min(s.len, s.t.length);
+  out.t.set(s.t.subarray(0, n)); out.o.set(s.o.subarray(0, n)); out.h.set(s.h.subarray(0, n));
+  out.l.set(s.l.subarray(0, n)); out.c.set(s.c.subarray(0, n)); out.v.set(s.v.subarray(0, n));
+  out.len = n;
+  return out;
 }
 
 /** Deep copy suitable for persisting while the simulation keeps running. */

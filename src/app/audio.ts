@@ -22,13 +22,16 @@ function ac(): AudioContext | null {
 
 export function unlockAudio() {
   if (unlocked) return;
+  // only unlock on a genuine user activation (avoids autoplay-policy warnings)
+  const ua = (navigator as Navigator & { userActivation?: { isActive: boolean } }).userActivation;
+  if (ua && !ua.isActive) return;
   unlocked = true;
   ac()?.resume().catch(() => {});
   syncMusic();
 }
 
 if (typeof window !== 'undefined') {
-  const handler = () => { unlockAudio(); window.removeEventListener('pointerdown', handler); window.removeEventListener('keydown', handler); };
+  const handler = () => { unlockAudio(); if (unlocked) { window.removeEventListener('pointerdown', handler); window.removeEventListener('keydown', handler); } };
   window.addEventListener('pointerdown', handler);
   window.addEventListener('keydown', handler);
 }

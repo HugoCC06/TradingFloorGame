@@ -151,7 +151,12 @@ export function PerfChart({ series, height = 260, version, area }: { series: { n
       const pts = [...seen.entries()].sort((a, b) => a[0] - b[0]).map(([t, v]) => ({ time: t as UTCTimestamp, value: v }));
       l.setData(pts);
     });
-    chart.current?.timeScale().fitContent();
+    const c = chart.current;
+    c?.timeScale().fitContent();
+    // the auto-sized container may not have its final width yet on first paint
+    const raf = requestAnimationFrame(() => c?.timeScale().fitContent());
+    const t = setTimeout(() => { try { c?.timeScale().fitContent(); } catch { /* chart removed */ } }, 120);
+    return () => { cancelAnimationFrame(raf); clearTimeout(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version, series.map((s) => s.points.length).join(',')]);
   return (

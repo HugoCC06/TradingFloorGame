@@ -222,7 +222,7 @@ export function IntradayPanel({ state }: { state: GameState }) {
         <div className="stat"><span className="tiny">Today</span><span className={`v ${cls(day)}`}>{money(day, { sign: true })}</span></div>
         <div className="stat right"><span className="tiny">Since open</span><span className={cls(day)}>{pct(state.navAtOpen ? day / state.navAtOpen : 0)}</span></div>
       </div>
-      <Sparkline values={vals.length > 1 ? vals : [0, 0]} width={300} height={46} />
+      <Sparkline values={vals.length > 1 ? vals : [0, 0]} width={300} height={46} fluid />
     </div>
   );
 }

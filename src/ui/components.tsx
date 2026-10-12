@@ -165,15 +165,15 @@ export function DataTable<T>({ rows, columns, rowKey, onRowClick, selected, init
   );
 }
 
-export function Sparkline({ values, width = 80, height = 22, color }: { values: number[]; width?: number; height?: number; color?: string }) {
-  if (values.length < 2) return <svg width={width} height={height} className="spark" />;
+export function Sparkline({ values, width = 80, height = 22, color, fluid }: { values: number[]; width?: number; height?: number; color?: string; fluid?: boolean }) {
+  if (values.length < 2) return <svg width={fluid ? '100%' : width} height={height} className="spark" />;
   const min = Math.min(...values), max = Math.max(...values);
   const rng = max - min || 1;
   const pts = values.map((v, i) => `${((i / (values.length - 1)) * width).toFixed(1)},${(height - 2 - ((v - min) / rng) * (height - 4)).toFixed(1)}`).join(' ');
   const up = values[values.length - 1] >= values[0];
   return (
-    <svg width={width} height={height} className="spark" aria-hidden>
-      <polyline points={pts} fill="none" stroke={color ?? (up ? 'var(--pos)' : 'var(--neg)')} strokeWidth="1.4" strokeLinejoin="round" />
+    <svg width={fluid ? '100%' : width} height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="spark" aria-hidden>
+      <polyline points={pts} fill="none" stroke={color ?? (up ? 'var(--pos)' : 'var(--neg)')} strokeWidth="1.4" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }
