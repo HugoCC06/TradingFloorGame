@@ -12,8 +12,11 @@ const MIGRATIONS: Record<number, Migration> = {
 };
 
 export function migrate(raw: Record<string, unknown>): Record<string, unknown> {
+  if (!raw || typeof raw !== 'object' || typeof raw.schema !== 'number') {
+    throw new SaveError('This save file is corrupted or is not a Trading Floor save.', 'corrupt');
+  }
   let s = raw;
-  let v = typeof s.schema === 'number' ? s.schema : 0;
+  let v = s.schema as number;
   if (v > SAVE_SCHEMA) throw new SaveError(`This save was made by a newer version of Trading Floor (schema ${v}).`, 'incompatible');
   while (v < SAVE_SCHEMA) {
     const m = MIGRATIONS[v];
